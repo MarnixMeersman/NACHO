@@ -28,6 +28,8 @@ for row in csvreader:
     index += 1
 file.close()
 
+print(asteroids)
+
 # startDate = '2023-01-01'
 # stopDate = '2030-01-01'
 
@@ -92,7 +94,8 @@ for asteroid in asteroids:
         ephemeride["eph"][2].append(float(row[3])) 
         ephemeride["eph"][3].append(float(row[4])) 
     asteroid_ephemerides.append(ephemeride)
-    
+
+
     # break
 file.close()
 
@@ -105,9 +108,9 @@ with open(write_path, 'w') as f:
     writer.writerow(header)
     for asteroid in asteroid_ephemerides:
         difference = np.zeros((len(asteroid['eph'][1]),3))
-        difference[:,0] = np.array(asteroid['eph'][1]) - np.array(earth[0])
-        difference[:,1] = np.array(asteroid['eph'][2]) - np.array(earth[1])
-        difference[:,2] = np.array(asteroid['eph'][3]) - np.array(earth[2])
+        difference[:, 0] = np.array(asteroid['eph'][1]) - np.array(earth[0])
+        difference[:, 1] = np.array(asteroid['eph'][2]) - np.array(earth[1])
+        difference[:, 2] = np.array(asteroid['eph'][3]) - np.array(earth[2])
         difference = np.vstack((
             np.array(asteroid['eph'][1]) - np.array(earth[0]),
             np.array(asteroid['eph'][2]) - np.array(earth[1]),
@@ -162,4 +165,4 @@ for observation in observations:
 ax.set_xlabel("x")
 ax.set_ylabel("y")
 ax.set_zlabel("z")
-plt.show()
+#plt.show()
