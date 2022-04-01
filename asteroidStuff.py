@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from thermal_model import get_temperature
 
-all_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/all.csv"
-pha_path  = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/pha.csv"
-pha_100_path  = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/pha_100.csv"
-earth_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/earth.txt"
+all_path = "all.csv"
+pha_path  = "pha.csv"
+pha_100_path  = "pha_100.csv"
+earth_path = "earth.txt"
 
 asteroids = []
 file = open(pha_100_path)
@@ -77,7 +77,7 @@ file.close()
 asteroid_ephemerides = []
 for asteroid in asteroids:
     asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
-    read_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/ephemerides/" + asteroidName + '.csv'
+    read_path = "ephemerides/" + asteroidName + '.csv'
     file = open(read_path)
     temps = get_temperature(read_path, 0.51, 1E3)
     csvreader = csv.reader(file)
@@ -98,7 +98,7 @@ file.close()
 
 index = 0
 observations = []
-write_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/data.csv"
+write_path = "data.csv"
 with open(write_path, 'w') as f:
     writer = csv.writer(f)
     header = ["Name", "diameter", "H", "albedo", "date_closest", "closest distance"]
