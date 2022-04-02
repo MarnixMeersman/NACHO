@@ -45,8 +45,9 @@ if __name__ == "__main__":
 
     trajectory = get_temperature(file, A = 0.51, D = 1E3)
 
-    print(trajectory[:, 2:])
-    print(np.size(trajectory[:, 2:][:, 2]))
-    print(trajectory[:, 2:][-1, 2])
+    #print(trajectory)
+    print(trajectory[:, 2:][:, 2])
+    print(trajectory[:, 4:])
+
 
 
