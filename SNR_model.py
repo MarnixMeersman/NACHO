@@ -7,17 +7,13 @@ import plotly.graph_objects as go
 
 h = 6.62607004e-34  # Planck's constant
 c = 299792458  # m/s
-integration_time = 60*60
+integration_time = 30*60
 wavelength_min = 8
 wavelength_max = 12
 avg_lamda = (wavelength_min + wavelength_max)/2
 f = 1.6
 mirror_diameter = 0.5
 
-
-def albedo(D, H):
-
-    return (1329/D)*10**(-0.2*H)
 
 
 def lamda_E_lamda(lamda, T, epsilon):
@@ -43,16 +39,18 @@ def B(D, time, f):
 
     return 0.3*(np.pi/(4*h*c))*((D**2)/(f**2)) * avg_lamda*(det_area)*time
 
-def albedos(dataframe):
+def get_albedos(dataframe):
     albedo_lst = []
     for i in range(dataframe.shape[0]):
-        bedo = albedo(dataframe.at[i, "diameter"], dataframe.at[i, "H"])
+        D = dataframe.at[i, "diameter"]
+        H = dataframe.at[i, "H"]
+        bedo = (1329 / D) * 10 ** (-0.2 * H)
         albedo_lst.append(bedo)
     return albedo_lst
 
 def format_csv(filename):
     cols = ['no', 'date', 't_eqm', 't_stm', 't_frm']
-    df_thermal = pd.read_csv(filename, names=cols)  # TODO: Loop to change filenames per asteroid csv
+    df_thermal = pd.read_csv(filename, names=cols)
 
     df_thermal = df_thermal.loc[: df_thermal[(df_thermal['no'] == '$$EOE')].index[0], :]
     df_thermal = df_thermal.drop(df_thermal.index[-1:])
@@ -64,13 +62,14 @@ def format_csv(filename):
 
 
 
-df = pd.read_csv('data.csv', sep=",")
-albedos = albedos(df)
+df = pd.read_csv('/Users/marnixmeersman/Documents/GitHub/NACHO/data_old.csv', sep=",")
+albedos = get_albedos(df)
 df = df.assign(albedo_computed = albedos)
 
 # Re format date of dataframe to match thermal modal date
 df['date_closest'] = pd.to_datetime(df.date_closest)
 df['date_closest'] = df['date_closest'].dt.strftime('%Y-%b-%d')
+
 
 # df_thermal = format_csv('1566_Icarus.csv')
 # print(df_thermal)
@@ -85,14 +84,15 @@ df['date_closest'] = df['date_closest'].dt.strftime('%Y-%b-%d')
 
 # df_merged = df.merge(df_thermal, left_on='date_closest', right_on=1)[df.columns]
 # print(df_merged)
-
+S_lst = []
 SNR_lst = []
 T_lst = []
-for i, filename in zip(range(df.shape[0]), os.listdir('ephemerides')):
-    file = os.path.join('ephemerides', filename)
+for i, filename in zip(range(df.shape[0]), os.listdir('/Users/marnixmeersman/Documents/GitHub/NACHO/ephemerides')):  # TODO: suddenly i and filename do not correspond anymore, so this is a problem
+    file = os.path.join('/Users/marnixmeersman/Documents/GitHub/NACHO/ephemerides', filename)
     df_thermal = format_csv(file)
-    j = df_thermal.index[df_thermal['date'] == df.at[i, "date"]].item()
+    j = df_thermal.index[df_thermal['date'] == df.at[i, 'date_closest']].item()
     A = df.at[i, "albedo_computed"]
+    print(filename, df.at[i, "Name"])
 
     D = mirror_diameter
     diameter = df.at[i, "diameter"] * 1000
@@ -108,18 +108,26 @@ for i, filename in zip(range(df.shape[0]), os.listdir('ephemerides')):
     SNR = Signal/Noise
     SNR_lst.append(SNR)
     T_lst.append(T)
+    S_lst.append(Signal)
 
+S_power = [i/integration_time for i in S_lst]
+SNR_dB  = [10*np.log(snr) for snr in SNR_lst]
 df = df.assign(SNR = SNR_lst)
 df = df.assign(Temp = T_lst)
+df = df.assign(Signal_power_W = S_power)
+df = df.assign(SNR_dB = SNR_dB)
 
 
 
 pd.set_option('display.max_columns', None)
 print(df)
 
-fig = px.scatter(df, x="SNR", y="date_closest",
+fig = px.scatter(df, x="SNR", y="Signal_power_W",
                  size="diameter", color="Temp",
-                 hover_name="Name", size_max=35)
+                 hover_name="Name", size_max=35, title="Signal to Noise [dB] per asteroid with 0.5 [m] diameter mirror and IR sensor spectrum of 8-12 [micron]")
+# fig.update_yaxes(type="log")
+fig.update_xaxes(type="log")
 fig.show()
+fig.write_html("/Users/marnixmeersman/Documents/GitHub/NACHO/snr_albedo_closest_range.html")
 
 
