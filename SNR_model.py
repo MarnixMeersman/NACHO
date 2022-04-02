@@ -126,10 +126,30 @@ print(df)
 
 fig = px.scatter(df, x="SNR", y="Signal_power_W",
                  size="diameter", color="Temp",
-                 hover_name="Name", size_max=35, title="Signal to Noise [dB] per asteroid with 0.5 [m] diameter mirror and IR sensor spectrum of 8-12 [micron]")
+                 hover_name="Name", size_max=35, title="Signal to Noise per asteroid with 0.5 [m] diameter mirror and IR sensor spectrum of 8-12 [micron]")
 # fig.update_yaxes(type="log")
 fig.update_xaxes(type="log")
 fig.show()
+fig.write_html("/Users/marnixmeersman/Documents/GitHub/NACHO/snr_signalpower_closest_range.html")
+
+
+fig = px.scatter(df, x="SNR", y="closest distance",
+                 size="diameter", color="Temp",
+                 hover_name="Name", size_max=35, title="Signal to Noise per asteroid with 0.5 [m] diameter mirror and IR sensor spectrum of 8-12 [micron]")
+# fig.update_yaxes(type="log")
+fig.update_xaxes(type="log")
+fig.show()
+
 fig.write_html("/Users/marnixmeersman/Documents/GitHub/NACHO/snr_albedo_closest_range.html")
+
+fig = px.scatter(df, x="date_closest", y="SNR",
+                 size="diameter", color="Temp",
+                 hover_name="Name", size_max=35, title="Signal to Noise per asteroid with 0.5 [m] diameter mirror and IR sensor spectrum of 8-12 [micron]")
+fig.update_yaxes(type="log")
+#fig.update_xaxes(type="log")
+fig.show()
+
+fig.write_html("/Users/marnixmeersman/Documents/GitHub/NACHO/snr_date_closest_range.html")
+
 
 
