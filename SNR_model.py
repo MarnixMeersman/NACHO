@@ -5,6 +5,7 @@ from thermal_model import get_temperature
 import plotly.express as px
 import plotly.graph_objects as go
 
+
 h = 6.62607004e-34  # Planck's constant
 c = 299792458  # m/s
 integration_time = 30*60
@@ -150,6 +151,3 @@ fig.update_yaxes(type="log")
 fig.show()
 
 fig.write_html("/Users/marnixmeersman/Documents/GitHub/NACHO/snr_date_closest_range.html")
-
-
-

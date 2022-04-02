@@ -31,7 +31,6 @@ for row in csvreader:
     index += 1
 file.close()
 
-print(asteroids)
 
 # startDate = '2023-01-01'
 # stopDate = '2030-01-01'
@@ -76,18 +75,16 @@ for row in csvreader:
     earth[0].append(float(row[2])) 
     earth[1].append(float(row[3])) 
     earth[2].append(float(row[4])) 
-#file.close()
+file.close()
 
-filenames = []
 asteroid_ephemerides = []
 for asteroid in asteroids:
     asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
     read_path = location + "/ephemerides/" + asteroidName + '.csv'
-    fileName =  asteroidName + '.csv'
-    filenames.append(fileName)
+    file = open(read_path)
     temps = get_temperature(read_path, 0.51, 1E3)
     csvreader = csv.reader(file)
-    ephemeride = {"name":asteroidName, "filename": fileName, "eph":[[],[], [], []]}
+    ephemeride = {"name":asteroidName, "eph":[[],[], [], []]}
     for row in csvreader:
         if row[0] == "$$EOE" : break
         date = row[1].strip(' ').split(' ')[1]
@@ -99,7 +96,6 @@ for asteroid in asteroids:
         ephemeride["eph"][3].append(float(row[4])) 
     asteroid_ephemerides.append(ephemeride)
 
-print(filenames)
     # break
 file.close()
 
@@ -111,7 +107,7 @@ with open(write_path, 'w') as f:
     header = ["Name", "diameter", "H", "albedo", "date", "distance"]
     writer.writerow(header)
     for asteroid in asteroid_ephemerides:
-        difference = np.zeros((len(asteroid['eph'][1]),3))
+        difference = np.zeros((len(asteroid['eph'][1]), 3))
         difference[:, 0] = np.array(asteroid['eph'][1]) - np.array(earth[0])
         difference[:, 1] = np.array(asteroid['eph'][2]) - np.array(earth[1])
         difference[:, 2] = np.array(asteroid['eph'][3]) - np.array(earth[2])
