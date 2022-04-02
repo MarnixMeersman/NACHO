@@ -91,7 +91,7 @@ T_lst = []
 for i, filename in zip(range(df.shape[0]), os.listdir('ephemerides')):
     file = os.path.join('ephemerides', filename)
     df_thermal = format_csv(file)
-    j = df_thermal.index[df_thermal['date'] == df.at[i, "date_closest"]].item()
+    j = df_thermal.index[df_thermal['date'] == df.at[i, "date"]].item()
     A = df.at[i, "albedo_computed"]
 
     D = mirror_diameter
