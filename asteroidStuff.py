@@ -8,11 +8,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from thermal_model import get_temperature
+from pathlib import Path
+location = str(Path(__file__).parent.absolute())
 
-all_path = "all.csv"
-pha_path  = "pha.csv"
-pha_100_path  = "pha_100.csv"
-earth_path = "earth.txt"
+
+all_path = location + "/all.csv"
+pha_path  = location + "/pha.csv"
+pha_100_path  = location + "/pha_100.csv"
+earth_path = location + "/earth.txt"
 
 asteroids = []
 file = open(pha_100_path)
@@ -79,7 +82,7 @@ file.close()
 asteroid_ephemerides = []
 for asteroid in asteroids:
     asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
-    read_path = "ephemerides/" + asteroidName + '.csv'
+    read_path = location + "/ephemerides/" + asteroidName + '.csv'
     file = open(read_path)
     temps = get_temperature(read_path, 0.51, 1E3)
     csvreader = csv.reader(file)
@@ -101,10 +104,10 @@ file.close()
 
 index = 0
 observations = []
-write_path = "data.csv"
+write_path = location + "/data.csv"
 with open(write_path, 'w') as f:
     writer = csv.writer(f)
-    header = ["Name", "diameter", "H", "albedo", "date_closest", "closest distance"]
+    header = ["Name", "diameter", "H", "albedo", "date", "distance"]
     writer.writerow(header)
     for asteroid in asteroid_ephemerides:
         difference = np.zeros((len(asteroid['eph'][1]),3))
@@ -127,9 +130,13 @@ with open(write_path, 'w') as f:
 
         asteroid_data = asteroids[index]
         # asteroid_data.append([date, distance])
-
-        writer.writerow([asteroid_data["full_name"], asteroid_data["diameter"], asteroid_data["H"], asteroid_data["albedo"], date, distance])
+        for i in range(len(difference)):
+            distance = difference[i]
+            date = asteroid['eph'][0][i]
+            writer.writerow([asteroid_data["full_name"], asteroid_data["diameter"], asteroid_data["H"], asteroid_data["albedo"], date, distance])
         index += 1
+
+
 
 fig = plt.figure()
 plt.style.use('dark_background')
