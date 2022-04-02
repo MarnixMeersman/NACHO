@@ -76,14 +76,15 @@ for row in csvreader:
     earth[0].append(float(row[2])) 
     earth[1].append(float(row[3])) 
     earth[2].append(float(row[4])) 
-file.close()
+#file.close()
 
-
+filenames = []
 asteroid_ephemerides = []
 for asteroid in asteroids:
     asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
     read_path = location + "/ephemerides/" + asteroidName + '.csv'
-    fileName = read_path
+    fileName =  asteroidName + '.csv'
+    filenames.append(fileName)
     temps = get_temperature(read_path, 0.51, 1E3)
     csvreader = csv.reader(file)
     ephemeride = {"name":asteroidName, "filename": fileName, "eph":[[],[], [], []]}
@@ -98,7 +99,7 @@ for asteroid in asteroids:
         ephemeride["eph"][3].append(float(row[4])) 
     asteroid_ephemerides.append(ephemeride)
 
-
+print(filenames)
     # break
 file.close()
 
