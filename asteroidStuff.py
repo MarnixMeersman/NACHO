@@ -83,10 +83,10 @@ asteroid_ephemerides = []
 for asteroid in asteroids:
     asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
     read_path = location + "/ephemerides/" + asteroidName + '.csv'
-    file = open(read_path)
+    fileName = read_path
     temps = get_temperature(read_path, 0.51, 1E3)
     csvreader = csv.reader(file)
-    ephemeride = {"name":asteroidName, "eph":[[],[], [], []]}
+    ephemeride = {"name":asteroidName, "filename": fileName, "eph":[[],[], [], []]}
     for row in csvreader:
         if row[0] == "$$EOE" : break
         date = row[1].strip(' ').split(' ')[1]
