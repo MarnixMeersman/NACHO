@@ -91,11 +91,10 @@ filenames = ['1566 Icarus.csv', '1620 Geographos.csv', '1862 Apollo.csv', '1981 
 
 for i, filename in zip(range(df.shape[0]), filenames):
     file = os.path.join('/Users/marnixmeersman/Documents/GitHub/NACHO/ephemerides/', filename)
-    print(file)
     df_thermal = format_csv(file)
     j = df_thermal.index[df_thermal['date'] == df.at[i, 'date_closest']].item()
     A = df.at[i, "albedo_computed"]
-    print(filename, df.at[i, "Name"])
+    print("check if filename and asteroid name correspond: ", filename, df.at[i, "Name"])
 
     D = mirror_diameter
     diameter = df.at[i, "diameter"] * 1000
