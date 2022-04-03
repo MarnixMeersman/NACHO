@@ -78,13 +78,16 @@ for row in csvreader:
 file.close()
 
 asteroid_ephemerides = []
+filenames = []
 for asteroid in asteroids:
     asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
     read_path = location + "/ephemerides/" + asteroidName + '.csv'
+    name = asteroidName + '.csv'
+    filenames.append(name)
     file = open(read_path)
     temps = get_temperature(read_path, 0.51, 1E3)
     csvreader = csv.reader(file)
-    ephemeride = {"name":asteroidName, "eph":[[],[], [], []]}
+    ephemeride = {"name": asteroidName, "eph":[[],[], [], []]}
     for row in csvreader:
         if row[0] == "$$EOE" : break
         date = row[1].strip(' ').split(' ')[1]
@@ -98,6 +101,7 @@ for asteroid in asteroids:
 
     # break
 file.close()
+
 
 index = 0
 observations = []
@@ -135,38 +139,38 @@ with open(write_path, 'w') as f:
 
 
 
-fig = plt.figure()
-plt.style.use('dark_background')
-ax = fig.add_subplot(111, projection='3d')
-u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-
-r_sun = 696340
-x_sun = r_sun * np.cos(u)*np.sin(v)
-y_sun = r_sun * np.sin(u)*np.sin(v)
-z_sun = r_sun * np.cos(v)
-ax.plot_surface(x_sun, y_sun, z_sun, color="r")
-r_earth = 6378
-r_asteroid = 1000
-for observation in observations:
-    x_earth = r_earth * np.cos(u)*np.sin(v) + observation["earth_position"][0]
-    y_earth = r_earth * np.sin(u)*np.sin(v) + observation["earth_position"][1]
-    z_earth = r_earth * np.cos(v) + observation["earth_position"][2]
-    ax.plot_surface(x_earth, y_earth, z_earth, color="blue")
-
-    x_asteroid = r_asteroid * np.cos(u)*np.sin(v) + observation["asteroid_position"][0]
-    y_asteroid = r_asteroid * np.sin(u)*np.sin(v) + observation["asteroid_position"][1]
-    z_asteroid = r_asteroid * np.cos(v) + observation["asteroid_position"][2]
-    ax.plot_surface(x_asteroid, y_asteroid, z_asteroid, color="white")
-
-    ax.plot(
-        [observation["earth_position"][0], observation["asteroid_position"][0]], 
-        [observation["earth_position"][1], observation["asteroid_position"][1]], 
-        [observation["earth_position"][2], observation["asteroid_position"][2]], color="green")
-    # ax.set_xlim([-2E8, 2E8])
-    # ax.set_ylim([-2E8, 2E8])
-    # ax.set_zlim([-2E8, 2E8])
-# plt.axis("scaled")
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.set_zlabel("z")
-#plt.show()
+# fig = plt.figure()
+# plt.style.use('dark_background')
+# ax = fig.add_subplot(111, projection='3d')
+# u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+#
+# r_sun = 696340
+# x_sun = r_sun * np.cos(u)*np.sin(v)
+# y_sun = r_sun * np.sin(u)*np.sin(v)
+# z_sun = r_sun * np.cos(v)
+# ax.plot_surface(x_sun, y_sun, z_sun, color="r")
+# r_earth = 6378
+# r_asteroid = 1000
+# for observation in observations:
+#     x_earth = r_earth * np.cos(u)*np.sin(v) + observation["earth_position"][0]
+#     y_earth = r_earth * np.sin(u)*np.sin(v) + observation["earth_position"][1]
+#     z_earth = r_earth * np.cos(v) + observation["earth_position"][2]
+#     ax.plot_surface(x_earth, y_earth, z_earth, color="blue")
+#
+#     x_asteroid = r_asteroid * np.cos(u)*np.sin(v) + observation["asteroid_position"][0]
+#     y_asteroid = r_asteroid * np.sin(u)*np.sin(v) + observation["asteroid_position"][1]
+#     z_asteroid = r_asteroid * np.cos(v) + observation["asteroid_position"][2]
+#     ax.plot_surface(x_asteroid, y_asteroid, z_asteroid, color="white")
+#
+#     ax.plot(
+#         [observation["earth_position"][0], observation["asteroid_position"][0]],
+#         [observation["earth_position"][1], observation["asteroid_position"][1]],
+#         [observation["earth_position"][2], observation["asteroid_position"][2]], color="green")
+#     # ax.set_xlim([-2E8, 2E8])
+#     # ax.set_ylim([-2E8, 2E8])
+#     # ax.set_zlim([-2E8, 2E8])
+# # plt.axis("scaled")
+# ax.set_xlabel("x")
+# ax.set_ylabel("y")
+# ax.set_zlabel("z")
+# plt.show()
