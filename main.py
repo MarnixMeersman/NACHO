@@ -27,7 +27,7 @@ f = 1.6
 mirror_diameter = 0.5
 
 # Import dataframe
-df = pd.read_csv("/Users/marnixmeersman/Documents/GitHub/NACHO/data.csv", sep=",")
+df = pd.read_csv("data.csv", sep=",")
 
 # Computed albedos
 albedos = get_albedos(df)
@@ -38,7 +38,7 @@ temperatures = []
 
 i = 0
 for filename in filenames:
-    file = os.path.join('/Users/marnixmeersman/Documents/GitHub/NACHO/ephemerides', filename)
+    file = os.path.join('ephemerides', filename)
     T = get_temperature(file, df.at[i, "albedo_computed"], df.at[i, "diameter"] * 1000, epsilon)[:, 2:][:, 2]
     T = np.append(T, T[-1])
 
@@ -77,5 +77,5 @@ df = df.assign(SNR_dB = [10*np.log(i) for i in SNR_lst])
 
 
 print(df)
-df.to_csv('/Users/marnixmeersman/Documents/GitHub/NACHO/full_data.csv')
+# df.to_csv('full_data.csv')
 
