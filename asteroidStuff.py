@@ -3,6 +3,8 @@ from distutils.core import run_setup
 from re import A
 import requests
 import datetime
+from classes import Position
+from classes import Asteroid
 import stupid
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,19 +19,19 @@ pha_path  = location + "/pha.csv"
 pha_100_path  = location + "/pha_100.csv"
 earth_path = location + "/earth.txt"
 
-asteroids = []
-file = open(pha_100_path)
-csvreader = csv.reader(file)
-header = next(csvreader)
-rows = []
-index = 0
-for row in csvreader:
-    asteroid = {}
-    for field in range(len(row)):
-        asteroid[header[field]] = row[field]
-    asteroids.append(asteroid)
-    index += 1
-file.close()
+# asteroids = []
+# file = open(pha_100_path)
+# csvreader = csv.reader(file)
+# header = next(csvreader)
+# rows = []
+# index = 0
+# for row in csvreader:
+#     asteroid = {}
+#     for field in range(len(row)):
+#         asteroid[header[field]] = row[field]
+#     asteroids.append(asteroid)
+#     index += 1
+# file.close()
 
 
 # startDate = '2023-01-01'
@@ -49,7 +51,7 @@ file.close()
 
 #     table = r.json()["result"]
 #     table = table.split('SOE\n')[1].split('\n')
-#     write_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/ephemerides/" + asteroidName + '.csv'
+#     write_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/ephemerides_sentry/" + asteroidName + '.csv'
 #     with open(write_path, 'w') as f:
 #         writer = csv.writer(f)
 #         for row in table:
@@ -59,6 +61,62 @@ file.close()
 #     if index % 10 == 0:
 #         print(index/len(asteroids)*100, "%")
 # test2 = 1
+
+startDate = '2023-01-01'
+stopDate = '2030-01-01'
+
+url = "https://ssd-api.jpl.nasa.gov/sentry.api"
+r = requests.get(url)
+list = r.json()
+
+asteroids = []
+
+for asteroid in list['data']:
+    asteroidName = asteroid['fullname']
+    url = "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND='DES={name}'&OBJ_DATA='NO'&MAKE_EPHEM='YES'&EPHEM_TYPE='VECTOR'&CENTER='500@0'&START_TIME='{start}'&STOP_TIME='{stop}'&STEP_SIZE='1d'&QUANTITIES='1'&CSV_FORMAT='YES'".format(
+            name = asteroid['des'],
+            start = startDate,
+            stop = stopDate
+        )
+    r = requests.get(url)
+    table = r.json()["result"]
+    table = table.split('SOE\n')[1].split('\n')
+    ephemeris = []
+    write_path =  location + "/ephemerides_sentry/" + asteroidName + '.csv'
+    with open(write_path, 'w') as f:
+        writer = csv.writer(f)
+        for row in table:
+            if row == "$$EOE" : break
+            row = row.split(',')[0:5]
+            date = row[1].strip(' ').split(' ')[1]
+            date = datetime.datetime(int(date.split('-')[0]), stupid.string_to_month(date.split('-')[1]), int(date.split('-')[2]))
+            position = Position(date, float(row[2]), float(row[3]), float(row[4]))
+            ephemeris.append(position)
+            writer.writerow(row)
+    asteroid_obj = Asteroid(asteroidName, )
+    asteroids.append(asteroid_obj)
+
+for asteroid in asteroids:
+    asteroidName = asteroid["full_name"].split('(')[0].strip("    ")
+    number = asteroidName.split(" ")[0]
+    # number = "2" + ("0" * (7 - len(number) - 1)) + number
+    url = "https://ssd-api.jpl.nasa.gov/sentry.api?des={number}".format(
+        number = asteroidName
+    )
+    r = requests.get(url)
+
+    table = r.json()
+    table = table.split('SOE\n')[1].split('\n')
+    write_path = "/Users/timsmit/Documents/TU/Master/Jaar 1/PS II/Project/ephemerides/" + asteroidName + '.csv'
+    with open(write_path, 'w') as f:
+        writer = csv.writer(f)
+        for row in table:
+            row = row.split(',')[0:5]
+            writer.writerow(row)
+    index+=1
+    if index % 10 == 0:
+        print(index/len(asteroids)*100, "%")
+test2 = 1
 
 startDate = '2023-01-01'
 startDate = datetime.datetime(int(startDate.split('-')[0]), int(startDate.split('-')[1]), int(startDate.split('-')[2])) 
